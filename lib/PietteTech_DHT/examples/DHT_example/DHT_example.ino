@@ -1,19 +1,41 @@
-/*******************************************************************************
- * Project  : HumidorManager
- * Compiler : Particle Photon
- * Verion   : 0.7.0
- * Date     : 07.10.2018
- * Author   : Tim Hornikel
- * License  : GNU General Public License v3+
-*******************************************************************************/
+/*
+ * FILE:        DHT_example.cpp
+ * VERSION:     0.4
+ * PURPOSE:     Example that uses DHT library with two sensors
+ * LICENSE:     GPL v3 (http://www.gnu.org/licenses/gpl.html)
+ *
+ * Example that start acquisition of DHT sensor and allows the
+ * loop to continue until the acquisition has completed
+ * It uses DHT.acquire and DHT.acquiring
+ *
+ * Change DHT_SAMPLE_TIME to vary the frequency of samples
+ *
+ * Scott Piette (Piette Technologies) scott.piette@gmail.com
+ *      January 2014        Original Spark Port
+ *      October 2014        Added support for DHT21/22 sensors
+ *                          Improved timing, moved FP math out of ISR
+ *      September 2016      Updated for Particle and removed dependency
+ *                          on callback_wrapper.  Use of callback_wrapper
+ *                          is still for backward compatibility but not used
+ * ScruffR
+ *      February 2017       Migrated for Libraries 2.0
+ *                          Fixed blocking acquireAndWait()
+ *                          and previously ignored timeout setting
+ *                          Added timeout when waiting for Serial input
+ *
+ * With this library connect the DHT sensor to the following pins
+ * Spark Core: D0, D1, D2, D3, D4, A0, A1, A3, A5, A6, A7
+ * Particle  : any Pin but D0 & A5
+ * See docs for more background
+ *   https://docs.particle.io/reference/firmware/photon/#attachinterrupt-
+ */
 
-// Includings of 3rd party libraries
-#include "PietteTech_DHT.h"
+#include "PietteTech_DHT.h"  
 
  // system defines
-#define DHTTYPE  AM2302              // Sensor type DHT11/21/22/AM2301/AM2302
+#define DHTTYPE  DHT22              // Sensor type DHT11/21/22/AM2301/AM2302
 #define DHTPIN   D3           	    // Digital pin for communications
-#define DHT_SAMPLE_INTERVAL   30000  // Sample every thirty seconds
+#define DHT_SAMPLE_INTERVAL   2000  // Sample every two seconds
 
 /*
  * NOTE: Use of callback_wrapper has been deprecated but left in this example
@@ -63,7 +85,7 @@ void loop()
   // Check if we need to start the next sample
   if (millis() > DHTnextSampleTime) {
     if (!bDHTstarted) {		// start the sample
-      Serial.print("\n\n");
+      Serial.print("\n");
       Serial.print(n);
       Serial.print(": Retrieving information from sensor: ");
       DHT.acquire();
@@ -108,22 +130,20 @@ void loop()
 
       Serial.print("Humidity (%): ");
       Serial.println(DHT.getHumidity(), 2);
-      Particle.publish("Humidity", String(DHT.getHumidity(), 2));
 
-      Serial.print("Temperature (°C): ");
+      Serial.print("Temperature (oC): ");
       Serial.println(DHT.getCelsius(), 2);
-      Particle.publish("Temperature", String(DHT.getCelsius(), 2));
 
-      //Serial.print("Temperature (°F): ");
-      //Serial.println(DHT.getFahrenheit(), 2);
+      Serial.print("Temperature (oF): ");
+      Serial.println(DHT.getFahrenheit(), 2);
 
-      //Serial.print("Temperature (K): ");
-      //Serial.println(DHT.getKelvin(), 2);
+      Serial.print("Temperature (K): ");
+      Serial.println(DHT.getKelvin(), 2);
 
-      Serial.print("Dew Point (°C): ");
+      Serial.print("Dew Point (oC): ");
       Serial.println(DHT.getDewPoint());
 
-      Serial.print("Dew Point Slow (°C): ");
+      Serial.print("Dew Point Slow (oC): ");
       Serial.println(DHT.getDewPointSlow());
 
       n++;  // increment counter
